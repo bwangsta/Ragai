@@ -57,14 +57,16 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
       name: imageURI,
     })
 
-    fetch("http://10.0.2.2:3000/images/upload", {
+    fetch("http://10.0.2.2:3000/images", {
       method: "POST",
       body: formData,
       headers: {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
       },
-    }).catch((e) => console.log(e))
+    }).catch((e: Error) => {
+      console.log(e.message)
+    })
     closePreview()
     navigation.navigate("Tags", {
       uri: imageURI,
