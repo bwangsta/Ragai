@@ -1,5 +1,14 @@
 import { useState } from "react"
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native"
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+} from "react-native"
 import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
@@ -17,20 +26,57 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     "fur jacket",
     "pants",
   ])
+  const [tagInput, setTagInput] = useState("")
+
+  function deleteTag(selectedTag: string) {
+    setTags((prevTags) => prevTags.filter((tag) => tag !== selectedTag))
+  }
+
+  function handleInputChange(text: string) {
+    setTagInput(text)
+  }
+
+  function handleSubmit() {
+    setTags((prevTags) => [...prevTags, tagInput])
+    setTagInput("")
+  }
+
+  function finishEditing(index: number, newTag: string) {
+    setTags((prevTags) =>
+      prevTags.map((tag, i) => (i === index ? newTag : tag))
+    )
+  }
 
   return (
     <SafeArea>
-      <Image
-        style={{ flex: 3 }}
-        source={{ uri: uri }}
-        resizeMode="contain"
-        borderRadius={8}
-      />
-      <View style={styles.tagsList}>
-        {tags.map((tag) => (
-          <Tag key={tag} name={tag} />
-        ))}
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <Image style={{ flex: 2 }} source={{ uri: uri }} resizeMode="contain" />
+        <View style={styles.tagsList}>
+          {tags.map((tag, index) => (
+            <Tag
+              key={tag}
+              index={index}
+              name={tag}
+              deleteTag={deleteTag}
+              finishEditing={finishEditing}
+            />
+          ))}
+        </View>
+        <View style={styles.inputBox}>
+          <TextInput
+            autoCapitalize="none"
+            value={tagInput}
+            style={styles.input}
+            maxLength={20}
+            onChangeText={handleInputChange}
+            onSubmitEditing={handleSubmit}
+          />
+          <Text style={styles.addIcon}>+</Text>
+        </View>
+      </KeyboardAvoidingView>
       <View style={styles.buttonGroup}>
         <TouchableOpacity
           style={styles.button}
@@ -54,7 +100,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
-    flex: 1,
+    paddingVertical: 32,
   },
   button: {
     paddingVertical: 16,
@@ -66,8 +112,23 @@ const styles = StyleSheet.create({
   tagsList: {
     flexDirection: "row",
     flexWrap: "wrap",
+    alignItems: "center",
     gap: 4,
     paddingVertical: 16,
     flex: 1,
+  },
+  inputBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: 8,
+  },
+  input: {
+    flex: 1,
+    paddingLeft: 8,
+  },
+  addIcon: {
+    padding: 8,
   },
 })
