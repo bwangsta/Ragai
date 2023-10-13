@@ -36,7 +36,6 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   async function takePicture() {
     if (cameraRef.current) {
       const data = await cameraRef.current.takePictureAsync()
-      console.log(data)
       cameraRef.current.pausePreview()
       setImageURI(data.uri)
       setInPreview(true)
@@ -48,6 +47,28 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
       cameraRef.current.resumePreview()
       setInPreview(false)
     }
+  }
+
+  function onSubmit() {
+    const formData = new FormData()
+    formData.append("image", {
+      uri: imageURI,
+      type: "image/jpg",
+      name: imageURI,
+    })
+
+    fetch("http://10.0.2.2:3000/images/upload", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+      },
+    }).catch((e) => console.log(e))
+    closePreview()
+    navigation.navigate("Tags", {
+      uri: imageURI,
+    })
   }
 
   if (!permission) {
@@ -92,12 +113,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
             <View style={{ flex: 1 }}></View>
             <TouchableOpacity
               style={{ alignSelf: "flex-end" }}
-              onPress={() => {
-                navigation.navigate("Tags", {
-                  uri: imageURI,
-                })
-                closePreview()
-              }}
+              onPress={onSubmit}
             >
               <Text style={styles.text}>Submit</Text>
             </TouchableOpacity>

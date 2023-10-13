@@ -15,24 +15,25 @@ export default function SafeArea({ insets, style, children }: SafeAreaProps) {
     paddingBottom?: number
     paddingLeft?: number
   } = {}
+  const offset = 8
 
   switch (insets) {
     case "top":
       padding = { paddingTop: top }
       break
     case "right":
-      padding = { paddingRight: right }
+      padding = { paddingRight: right + offset }
       break
     case "bottom":
       padding = { paddingBottom: bottom }
       break
     case "left":
-      padding = { paddingLeft: left }
+      padding = { paddingLeft: left + offset }
       break
     case "horizontal":
       padding = {
-        paddingRight: right,
-        paddingLeft: left,
+        paddingRight: right + offset,
+        paddingLeft: left + offset,
       }
       break
     case "vertical":
@@ -44,9 +45,9 @@ export default function SafeArea({ insets, style, children }: SafeAreaProps) {
     default:
       padding = {
         paddingTop: top,
-        paddingRight: right,
+        paddingRight: right + offset,
         paddingBottom: bottom,
-        paddingLeft: left,
+        paddingLeft: left + offset,
       }
   }
 
