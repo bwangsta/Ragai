@@ -3,6 +3,14 @@ const ibm = require("ibm-cos-sdk")
 const express = require("express")
 const multer = require("multer")
 const multerS3 = require("multer-s3")
+const mongoose = require("mongoose")
+const Item = require("./models/Item")
+
+mongoose.connect(process.env.DATABASE_URI)
+const db = mongoose.connection
+
+db.on("error", (err) => console.error(err))
+db.once("open", () => console.log("Connected to Database"))
 
 const app = express()
 const s3 = new ibm.S3({
@@ -34,41 +42,34 @@ const upload = multer({
   }),
 })
 
-app.post("/images/upload", upload.single("image"), (req, res) => {
-  if (res.statusCode === 200) {
-    console.log("Uploaded image successfully")
+app.post("/images", upload.single("image"), async (req, res) => {
+  const file = res.req.file
+  if (file) {
+    const params = { Bucket: BUCKET_NAME, Key: file.key }
+    try {
+      const presignedUrl = await s3.getSignedUrlPromise("getObject", params)
+      const item = new Item({
+        name: file.originalname,
+        image: presignedUrl,
+        tags: ["t-shirt", "shirt", "red", "jacket"],
+      })
+      item.save()
+      console.log("Added to database")
+    } catch (e) {
+      console.log(e)
+    }
   } else {
-    console.log("Upload failed")
+    console.log("Unable to locate file")
   }
 })
 
 app.get("/images", async (req, res) => {
-  const imageUrlList = []
   try {
-    const data = await s3.listObjectsV2({ Bucket: BUCKET_NAME }).promise()
-    if (data) {
-      const urlPromises = data.Contents.map((bucketContent) => {
-        return new Promise((resolve, reject) => {
-          const urlParams = { Bucket: BUCKET_NAME, Key: bucketContent.Key }
-          s3.getSignedUrl("getObject", urlParams, (err, url) => {
-            if (err) {
-              console.log(err)
-              reject(err)
-            } else {
-              imageUrlList.push(url)
-              resolve(url)
-            }
-          })
-        })
-      })
-
-      await Promise.all(urlPromises)
-    }
+    const items = await Item.find({}).exec()
+    res.json(items)
   } catch (e) {
     console.log(e)
   }
-
-  res.json({ urls: imageUrlList })
 })
 
 app.listen(PORT, () => {
