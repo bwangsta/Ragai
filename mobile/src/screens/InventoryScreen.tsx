@@ -30,7 +30,7 @@ export default function InventoryScreen() {
       <FlatList
         data={itemsData}
         extraData={itemsData}
-        numColumns={3}
+        numColumns={2}
         horizontal={false}
         columnWrapperStyle={styles.column}
         renderItem={({ item }) => (

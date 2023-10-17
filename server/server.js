@@ -42,19 +42,26 @@ const upload = multer({
   }),
 })
 
+app.post("/items", upload.none(), async (req, res) => {
+  const data = JSON.parse(req.body.data)
+
+  try {
+    const item = new Item(data)
+    await item.save()
+    console.log("Added to database")
+  } catch (e) {
+    console.log(e)
+  }
+})
+
 app.post("/images", upload.single("image"), async (req, res) => {
-  const file = res.req.file
+  const file = req.file
   if (file) {
     const params = { Bucket: BUCKET_NAME, Key: file.key }
     try {
       const presignedUrl = await s3.getSignedUrlPromise("getObject", params)
-      const item = new Item({
-        name: file.originalname,
-        image: presignedUrl,
-        tags: ["t-shirt", "shirt", "red", "jacket"],
-      })
-      item.save()
-      console.log("Added to database")
+      res.json({ url: presignedUrl })
+      console.log("Successfully uploaded image")
     } catch (e) {
       console.log(e)
     }

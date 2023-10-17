@@ -16,7 +16,7 @@ import Tag from "../components/Tag"
 type TagsScreenProps = RootStackScreenProps<"Tags">
 
 export default function TagsScreen({ navigation, route }: TagsScreenProps) {
-  const { uri } = route.params
+  const { url } = route.params
   const [tags, setTags] = useState<string[]>([
     "t-shirt",
     "shirt",
@@ -36,7 +36,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     setTagInput(text)
   }
 
-  function handleSubmit() {
+  function handleSubmitEditing() {
     setTags((prevTags) => [...prevTags, tagInput])
     setTagInput("")
   }
@@ -47,13 +47,36 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     )
   }
 
+  function handleSubmit() {
+    const formData = new FormData()
+    formData.append(
+      "data",
+      JSON.stringify({
+        name: "Some clothing",
+        image: url,
+        tags: tags,
+      })
+    )
+    fetch("http://10.0.2.2:3000/items", {
+      method: "POST",
+      body: formData,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+      },
+    }).catch((e: Error) => {
+      console.log(e.message)
+    })
+    navigation.navigate("Home", { screen: "Camera" })
+  }
+
   return (
     <SafeArea>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <Image style={{ flex: 2 }} source={{ uri: uri }} resizeMode="contain" />
+        <Image style={{ flex: 2 }} source={{ uri: url }} resizeMode="contain" />
         <View style={styles.tagsList}>
           {tags.map((tag, index) => (
             <Tag
@@ -72,7 +95,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
             style={styles.input}
             maxLength={20}
             onChangeText={handleInputChange}
-            onSubmitEditing={handleSubmit}
+            onSubmitEditing={handleSubmitEditing}
           />
           <Text style={styles.addIcon}>+</Text>
         </View>
@@ -84,10 +107,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         >
           <Text>Cancel</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home", { screen: "Camera" })}
-        >
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text>Confirm</Text>
         </TouchableOpacity>
       </View>

@@ -11,7 +11,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   const [type, setType] = useState(CameraType.back)
   const [inPreview, setInPreview] = useState(false)
   const [flashMode, setFlashMode] = useState(FlashMode.auto)
-  const [imageURI, setImageURI] = useState("")
+  const [imageUri, setImageUri] = useState("")
   const [permission, requestPermission] = Camera.useCameraPermissions()
 
   function toggleCameraType() {
@@ -37,7 +37,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     if (cameraRef.current) {
       const data = await cameraRef.current.takePictureAsync()
       cameraRef.current.pausePreview()
-      setImageURI(data.uri)
+      setImageUri(data.uri)
       setInPreview(true)
     }
   }
@@ -52,9 +52,9 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   function onSubmit() {
     const formData = new FormData()
     formData.append("image", {
-      uri: imageURI,
+      uri: imageUri,
       type: "image/jpg",
-      name: imageURI,
+      name: imageUri,
     })
 
     fetch("http://10.0.2.2:3000/images", {
@@ -64,13 +64,17 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
       },
-    }).catch((e: Error) => {
-      console.log(e.message)
     })
-    closePreview()
-    navigation.navigate("Tags", {
-      uri: imageURI,
-    })
+      .then((response) => response.json())
+      .then((data) => {
+        closePreview()
+        navigation.navigate("Tags", {
+          url: data.url,
+        })
+      })
+      .catch((e: Error) => {
+        console.log(e.message)
+      })
   }
 
   if (!permission) {
