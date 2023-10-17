@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Image, StyleSheet, Text, View, FlatList } from "react-native"
 import SafeArea from "../components/SafeArea"
+import { getData } from "../services/api"
 
 type Item = {
   _id: string
@@ -13,16 +14,9 @@ export default function InventoryScreen() {
   const [itemsData, setItemsData] = useState<Item[]>([])
 
   useEffect(() => {
-    async function getItems() {
-      try {
-        const response = await fetch("http://10.0.2.2:3000/images")
-        const data = await response.json()
-        setItemsData(data)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-    getItems()
+    getData("/items")
+      .then((data) => setItemsData(data))
+      .catch((e) => console.log(e))
   }, [])
 
   return (

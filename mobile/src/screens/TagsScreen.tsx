@@ -12,6 +12,7 @@ import {
 import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
+import { postData } from "../services/api"
 
 type TagsScreenProps = RootStackScreenProps<"Tags">
 
@@ -47,7 +48,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     )
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const formData = new FormData()
     formData.append(
       "data",
@@ -57,17 +58,8 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         tags: tags,
       })
     )
-    fetch("http://10.0.2.2:3000/items", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    }).catch((e: Error) => {
-      console.log(e.message)
-    })
     navigation.navigate("Home", { screen: "Camera" })
+    await postData("/items", formData)
   }
 
   return (

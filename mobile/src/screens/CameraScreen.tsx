@@ -3,6 +3,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Camera, CameraType, FlashMode } from "expo-camera"
 import { HomeTabScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
+import { postData } from "../services/api"
 
 type CameraScreenProps = HomeTabScreenProps<"Camera">
 
@@ -49,7 +50,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     }
   }
 
-  function onSubmit() {
+  async function onSubmit() {
     const formData = new FormData()
     formData.append("image", {
       uri: imageUri,
@@ -57,24 +58,11 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
       name: imageUri,
     })
 
-    fetch("http://10.0.2.2:3000/images", {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
+    closePreview()
+    const data = await postData("/images", formData)
+    navigation.navigate("Tags", {
+      url: data.url,
     })
-      .then((response) => response.json())
-      .then((data) => {
-        closePreview()
-        navigation.navigate("Tags", {
-          url: data.url,
-        })
-      })
-      .catch((e: Error) => {
-        console.log(e.message)
-      })
   }
 
   if (!permission) {

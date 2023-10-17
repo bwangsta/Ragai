@@ -96,7 +96,7 @@ app.post("/images/upload", upload.single("image"), async (req, res) => {
   }
 })
 
-app.get("/images", async (req, res) => {
+app.get("/items", async (req, res) => {
   try {
     const items = await Item.find({}).exec()
     res.json(items)
