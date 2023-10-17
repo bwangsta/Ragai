@@ -1,6 +1,7 @@
 require("dotenv").config()
 const ibm = require("ibm-cos-sdk")
 const express = require("express")
+const cors = require("cors")
 const multer = require("multer")
 const multerS3 = require("multer-s3")
 const mongoose = require("mongoose")
@@ -42,6 +43,13 @@ const upload = multer({
   }),
 })
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+)
+
+// Adding clothing name, image, and tags to database
 app.post("/items", upload.none(), async (req, res) => {
   const data = JSON.parse(req.body.data)
 
@@ -54,12 +62,30 @@ app.post("/items", upload.none(), async (req, res) => {
   }
 })
 
+// Uploading images on the mobile app
 app.post("/images", upload.single("image"), async (req, res) => {
   const file = req.file
   if (file) {
-    const params = { Bucket: BUCKET_NAME, Key: file.key }
     try {
-      const presignedUrl = await s3.getSignedUrlPromise("getObject", params)
+      res.json({ url: file.location })
+      console.log("Successfully uploaded image")
+    } catch (e) {
+      console.log(e)
+    }
+  } else {
+    console.log("Unable to locate file")
+  }
+})
+
+// Uploading temporary images on website
+app.post("/images/upload", upload.single("image"), async (req, res) => {
+  const file = req.file
+  if (file) {
+    try {
+      const presignedUrl = await s3.getSignedUrlPromise("getObject", {
+        Bucket: BUCKET_NAME,
+        Key: file.key,
+      })
       res.json({ url: presignedUrl })
       console.log("Successfully uploaded image")
     } catch (e) {
