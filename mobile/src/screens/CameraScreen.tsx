@@ -61,6 +61,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     closePreview()
     const data = await postData("/images", formData)
     navigation.navigate("Tags", {
+      key: data.key,
       url: data.url,
     })
   }

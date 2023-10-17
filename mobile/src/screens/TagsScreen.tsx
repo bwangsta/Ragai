@@ -12,12 +12,12 @@ import {
 import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
-import { postData } from "../services/api"
+import { deleteData, postData } from "../services/api"
 
 type TagsScreenProps = RootStackScreenProps<"Tags">
 
 export default function TagsScreen({ navigation, route }: TagsScreenProps) {
-  const { url } = route.params
+  const { key, url } = route.params
   const [tags, setTags] = useState<string[]>([
     "t-shirt",
     "shirt",
@@ -46,6 +46,11 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     setTags((prevTags) =>
       prevTags.map((tag, i) => (i === index ? newTag : tag))
     )
+  }
+
+  async function handleCancel() {
+    navigation.navigate("Home", { screen: "Camera" })
+    await deleteData(`/images/${key}`)
   }
 
   async function handleSubmit() {
@@ -93,10 +98,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         </View>
       </KeyboardAvoidingView>
       <View style={styles.buttonGroup}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home", { screen: "Camera" })}
-        >
+        <TouchableOpacity style={styles.button} onPress={handleCancel}>
           <Text>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>

@@ -10,6 +10,14 @@ export async function getData(endpoint: string) {
   }
 }
 
+export async function deleteData(endpoint: string) {
+  try {
+    await fetch(`${BASE_URL}${endpoint}`, { method: "DELETE" })
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export async function postData(endpoint: string, formData: FormData) {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {

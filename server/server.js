@@ -62,12 +62,18 @@ app.post("/items", upload.none(), async (req, res) => {
   }
 })
 
+app.delete("/images/:key", async (req, res) => {
+  const { key } = req.params
+  await s3.deleteObject({ Bucket: BUCKET_NAME, Key: key }).promise()
+  console.log("Successfully deleted image")
+})
+
 // Uploading images on the mobile app
 app.post("/images", upload.single("image"), async (req, res) => {
   const file = req.file
   if (file) {
     try {
-      res.json({ url: file.location })
+      res.json({ key: file.key, url: file.location })
       console.log("Successfully uploaded image")
     } catch (e) {
       console.log(e)
