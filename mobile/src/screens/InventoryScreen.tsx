@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Image, StyleSheet, Text, View, FlatList } from "react-native"
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import SafeArea from "../components/SafeArea"
 import { getData } from "../services/api"
 
@@ -11,6 +12,7 @@ type Item = {
 }
 
 export default function InventoryScreen() {
+  const tabBarHeight = useBottomTabBarHeight()
   const [itemsData, setItemsData] = useState<Item[]>([])
 
   useEffect(() => {
@@ -20,12 +22,13 @@ export default function InventoryScreen() {
   }, [])
 
   return (
-    <SafeArea>
+    <SafeArea style={{ paddingBottom: tabBarHeight }}>
       <FlatList
         data={itemsData}
         extraData={itemsData}
         numColumns={2}
         horizontal={false}
+        initialNumToRender={4}
         columnWrapperStyle={styles.column}
         renderItem={({ item }) => (
           <View key={item._id} style={styles.itemContainer}>
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 150,
+    height: 240,
   },
   name: {
     paddingVertical: 4,
@@ -74,6 +77,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
+    overflow: "hidden",
   },
   tagsList: {
     flexDirection: "row",
