@@ -1,11 +1,6 @@
 import { useState } from "react"
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-} from "react-native"
+import { StyleSheet, View, TouchableOpacity, TextInput } from "react-native"
+import Ionicons from "@expo/vector-icons/Ionicons"
 
 type TagProps = {
   name: string
@@ -34,7 +29,7 @@ export default function Tag({
         style={{ fontSize: 16 }}
       />
       <TouchableOpacity onPress={() => deleteTag(name)}>
-        <Text>X</Text>
+        <Ionicons name="close" size={24} />
       </TouchableOpacity>
     </View>
   )
@@ -48,5 +43,6 @@ const styles = StyleSheet.create({
     gap: 16,
     borderRadius: 4,
     padding: 8,
+    overflow: "hidden",
   },
 })

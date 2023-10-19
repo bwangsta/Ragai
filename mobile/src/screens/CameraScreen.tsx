@@ -1,6 +1,8 @@
 import { useState, useRef } from "react"
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Camera, CameraType, FlashMode } from "expo-camera"
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+import { MaterialIcons, Ionicons } from "@expo/vector-icons"
 import { HomeTabScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import { postData } from "../services/api"
@@ -8,12 +10,22 @@ import { postData } from "../services/api"
 type CameraScreenProps = HomeTabScreenProps<"Camera">
 
 export default function CameraScreen({ navigation }: CameraScreenProps) {
+  const tabBarHeight = useBottomTabBarHeight()
   const cameraRef = useRef<Camera>(null)
   const [type, setType] = useState(CameraType.back)
   const [inPreview, setInPreview] = useState(false)
   const [flashMode, setFlashMode] = useState(FlashMode.auto)
   const [imageUri, setImageUri] = useState("")
   const [permission, requestPermission] = Camera.useCameraPermissions()
+  let flashIcon: keyof typeof MaterialIcons.glyphMap
+
+  if (flashMode === FlashMode.auto) {
+    flashIcon = "flash-auto"
+  } else if (flashMode === FlashMode.on) {
+    flashIcon = "flash-on"
+  } else {
+    flashIcon = "flash-off"
+  }
 
   function toggleCameraType() {
     setType((prevType) =>
@@ -59,6 +71,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     })
 
     closePreview()
+    navigation.navigate("Loading", { message: "Generating tags..." })
     const data = await postData("/images", formData)
     navigation.navigate("Tags", {
       key: data.key,
@@ -88,7 +101,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   }
 
   return (
-    <SafeArea insets="top">
+    <SafeArea insets="top" style={{ backgroundColor: "black" }}>
       <Camera
         style={styles.camera}
         type={type}
@@ -96,38 +109,58 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
         ref={cameraRef}
       >
         {inPreview ? (
-          <View style={{ marginHorizontal: 24, marginVertical: 40, flex: 1 }}>
+          <View
+            style={{
+              marginHorizontal: 24,
+              marginVertical: 40,
+              flex: 1,
+              justifyContent: "space-between",
+            }}
+          >
             <TouchableOpacity
               style={{
                 alignSelf: "flex-start",
               }}
               onPress={closePreview}
             >
-              <Text style={styles.text}>X</Text>
+              <Ionicons name="close" color="white" size={32} />
             </TouchableOpacity>
-            <View style={{ flex: 1 }}></View>
             <TouchableOpacity
-              style={{ alignSelf: "flex-end" }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                alignSelf: "flex-end",
+                marginBottom: tabBarHeight,
+                backgroundColor: "lightblue",
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 24,
+                overflow: "hidden",
+              }}
               onPress={onSubmit}
             >
               <Text style={styles.text}>Submit</Text>
+              <Ionicons name="chevron-forward" color="white" size={32} />
             </TouchableOpacity>
           </View>
         ) : (
-          <>
+          <View style={{ flex: 1, justifyContent: "space-between" }}>
             <View style={styles.buttonGroup}>
               <TouchableOpacity onPress={toggleCameraType}>
-                <Text style={styles.text}>Flip</Text>
+                <MaterialIcons name="flip-camera-ios" color="white" size={32} />
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleFlash}>
-                <Text style={styles.text}>{flashMode.toUpperCase()}</Text>
+                <MaterialIcons name={flashIcon} color="white" size={32} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity
-              style={styles.pictureButton}
+              style={[
+                styles.pictureButton,
+                { marginBottom: 64 + tabBarHeight },
+              ]}
               onPress={takePicture}
             />
-          </>
+          </View>
         )}
       </Camera>
     </SafeArea>
@@ -139,15 +172,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonGroup: {
-    flex: 1,
-    gap: 8,
+    gap: 24,
     backgroundColor: "transparent",
     paddingTop: 48,
     paddingRight: 16,
     alignItems: "flex-end",
   },
   pictureButton: {
-    marginBottom: 96,
     alignSelf: "center",
     width: 80,
     height: 80,
@@ -156,8 +187,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   text: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     color: "white",
+    padding: 8,
   },
 })

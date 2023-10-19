@@ -8,6 +8,7 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 export type RootStackParamList = {
   Home: NavigatorScreenParams<HomeTabParamList>
   Tags: { key: string; url: string }
+  Loading: { message: string }
 }
 
 export type HomeTabParamList = {

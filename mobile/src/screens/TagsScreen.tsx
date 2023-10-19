@@ -9,6 +9,7 @@ import {
   Platform,
   TextInput,
 } from "react-native"
+import Ionicons from "@expo/vector-icons/Ionicons"
 import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
@@ -18,6 +19,7 @@ type TagsScreenProps = RootStackScreenProps<"Tags">
 
 export default function TagsScreen({ navigation, route }: TagsScreenProps) {
   const { key, url } = route.params
+
   const [tags, setTags] = useState<string[]>([
     "t-shirt",
     "shirt",
@@ -71,7 +73,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     <SafeArea>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        style={{ flex: 1, paddingBottom: 16 }}
       >
         <Image style={{ flex: 2 }} source={{ uri: url }} resizeMode="contain" />
         <View style={styles.tagsList}>
@@ -88,13 +90,14 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         <View style={styles.inputBox}>
           <TextInput
             autoCapitalize="none"
+            placeholder="Add tags"
             value={tagInput}
             style={styles.input}
             maxLength={20}
             onChangeText={handleInputChange}
             onSubmitEditing={handleSubmitEditing}
           />
-          <Text style={styles.addIcon}>+</Text>
+          <Ionicons name="add" size={24} style={{ padding: 8 }} />
         </View>
       </KeyboardAvoidingView>
       <View style={styles.buttonGroup}>
@@ -141,8 +144,5 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingLeft: 8,
-  },
-  addIcon: {
-    padding: 8,
   },
 })
