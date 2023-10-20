@@ -8,6 +8,7 @@ import InventoryScreen from "./src/screens/InventoryScreen"
 import TagsScreen from "./src/screens/TagsScreen"
 import { RootStackParamList, HomeTabParamList } from "./src/types"
 import LoadingScreen from "./src/screens/LoadingScreen"
+import { colors } from "./src/styles/colors"
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator<HomeTabParamList>()
@@ -24,11 +25,15 @@ export default function App() {
                 screenOptions={{
                   headerShown: false,
                   tabBarStyle: {
-                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    backgroundColor: "rgba(0, 0, 0, 0.8)",
                     position: "absolute",
                     borderTopWidth: 0,
+                    elevation: 1,
+                    borderTopLeftRadius: 24,
+                    borderTopRightRadius: 24,
                   },
-                  tabBarActiveTintColor: "white",
+                  tabBarActiveTintColor: "#5AD4BE",
+                  tabBarInactiveTintColor: colors.white,
                 }}
               >
                 <Tab.Screen

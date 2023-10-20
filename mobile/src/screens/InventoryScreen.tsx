@@ -3,6 +3,7 @@ import { Image, StyleSheet, Text, View, FlatList } from "react-native"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import SafeArea from "../components/SafeArea"
 import { getData } from "../services/api"
+import { colors } from "../styles/colors"
 
 type Item = {
   _id: string
@@ -22,7 +23,9 @@ export default function InventoryScreen() {
   }, [])
 
   return (
-    <SafeArea style={{ paddingBottom: tabBarHeight }}>
+    <SafeArea
+      style={{ backgroundColor: colors.white, marginBottom: tabBarHeight }}
+    >
       <FlatList
         data={itemsData}
         extraData={itemsData}
@@ -71,9 +74,12 @@ const styles = StyleSheet.create({
   },
   name: {
     paddingVertical: 4,
+    color: colors.black,
+    fontWeight: "bold",
   },
   tag: {
-    backgroundColor: "gray",
+    backgroundColor: colors.primary,
+    color: colors.white,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,

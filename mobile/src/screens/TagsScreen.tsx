@@ -14,6 +14,7 @@ import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
 import { deleteData, postData } from "../services/api"
+import { colors } from "../styles/colors"
 
 type TagsScreenProps = RootStackScreenProps<"Tags">
 
@@ -91,21 +92,33 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
           <TextInput
             autoCapitalize="none"
             placeholder="Add tags"
+            placeholderTextColor={colors.white}
             value={tagInput}
             style={styles.input}
             maxLength={20}
             onChangeText={handleInputChange}
             onSubmitEditing={handleSubmitEditing}
           />
-          <Ionicons name="add" size={24} style={{ padding: 8 }} />
+          <Ionicons
+            name="add"
+            size={24}
+            color={colors.white}
+            style={{ padding: 8 }}
+          />
         </View>
       </KeyboardAvoidingView>
       <View style={styles.buttonGroup}>
-        <TouchableOpacity style={styles.button} onPress={handleCancel}>
-          <Text>Cancel</Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.secondary }]}
+          onPress={handleCancel}
+        >
+          <Text style={styles.text}>Cancel</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text>Confirm</Text>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={handleSubmit}
+        >
+          <Text style={styles.text}>Submit</Text>
         </TouchableOpacity>
       </View>
     </SafeArea>
@@ -123,8 +136,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
-    borderColor: "black",
-    borderWidth: 1,
   },
   tagsList: {
     flexDirection: "row",
@@ -137,12 +148,16 @@ const styles = StyleSheet.create({
   inputBox: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "black",
     borderRadius: 8,
+    backgroundColor: colors.primary,
   },
   input: {
     flex: 1,
     paddingLeft: 8,
+    color: colors.white,
+  },
+  text: {
+    color: colors.white,
+    fontSize: 16,
   },
 })

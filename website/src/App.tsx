@@ -70,14 +70,14 @@ function App() {
           <div className="space-y-4">
             <button
               type="button"
-              className="w-full rounded-2xl border-2 border-dashed border-black px-2 py-4 sm:h-72"
+              className="w-full rounded-2xl border-2 border-dashed border-black bg-secondary px-2 py-4 text-3xl text-black sm:h-72"
               onClick={handleButtonClick}
             >
-              Select An Image
+              {fileData ? fileData.name : "Select An Image"}
             </button>
             <button
               type="submit"
-              className="w-full rounded-lg border border-black px-1 py-2"
+              className="w-full rounded-lg border bg-primary px-1 py-2 text-2xl text-white"
             >
               Upload
             </button>
@@ -92,7 +92,6 @@ function App() {
                 className="mx-auto h-full w-full object-contain"
               />
             </div>
-            <p>{fileData?.name}</p>
           </div>
         )}
       </div>
@@ -100,7 +99,7 @@ function App() {
         {items.map((item) => (
           <div
             key={item._id}
-            className="overflow-hidden rounded-lg bg-slate-200"
+            className="overflow-hidden rounded-lg bg-secondary"
           >
             <img
               src={item.image}
@@ -108,10 +107,15 @@ function App() {
               className="h-72 w-full object-cover"
             />
             <div className="p-4">
-              <h2 className="mb-4 text-lg font-semibold">{item.name}</h2>
+              <h2 className="mb-4 text-lg font-semibold text-black">
+                {item.name}
+              </h2>
               <div className="flex flex-wrap gap-1">
                 {item.tags.map((tag) => (
-                  <p key={tag} className="rounded-lg bg-slate-300 px-2 py-1">
+                  <p
+                    key={tag}
+                    className="rounded-lg bg-primary px-2 py-1 text-white"
+                  >
                     {tag}
                   </p>
                 ))}

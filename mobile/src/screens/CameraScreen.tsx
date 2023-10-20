@@ -6,6 +6,7 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons"
 import { HomeTabScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import { postData } from "../services/api"
+import { colors } from "../styles/colors"
 
 type CameraScreenProps = HomeTabScreenProps<"Camera">
 
@@ -123,7 +124,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
               }}
               onPress={closePreview}
             >
-              <Ionicons name="close" color="white" size={32} />
+              <Ionicons name="close" color={colors.white} size={32} />
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -131,7 +132,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
                 alignItems: "center",
                 alignSelf: "flex-end",
                 marginBottom: tabBarHeight,
-                backgroundColor: "lightblue",
+                backgroundColor: colors.primary,
                 paddingHorizontal: 8,
                 paddingVertical: 4,
                 borderRadius: 24,
@@ -140,17 +141,25 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
               onPress={onSubmit}
             >
               <Text style={styles.text}>Submit</Text>
-              <Ionicons name="chevron-forward" color="white" size={32} />
+              <Ionicons name="chevron-forward" color={colors.white} size={32} />
             </TouchableOpacity>
           </View>
         ) : (
           <View style={{ flex: 1, justifyContent: "space-between" }}>
             <View style={styles.buttonGroup}>
               <TouchableOpacity onPress={toggleCameraType}>
-                <MaterialIcons name="flip-camera-ios" color="white" size={32} />
+                <MaterialIcons
+                  name="flip-camera-ios"
+                  color={colors.white}
+                  size={32}
+                />
               </TouchableOpacity>
               <TouchableOpacity onPress={toggleFlash}>
-                <MaterialIcons name={flashIcon} color="white" size={32} />
+                <MaterialIcons
+                  name={flashIcon}
+                  color={colors.white}
+                  size={32}
+                />
               </TouchableOpacity>
             </View>
             <TouchableOpacity
@@ -182,14 +191,14 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: 80,
     height: 80,
-    borderColor: "white",
+    borderColor: colors.white,
     borderWidth: 8,
     borderRadius: 50,
   },
   text: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "white",
+    color: colors.white,
     padding: 8,
   },
 })
