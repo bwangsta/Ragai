@@ -80,7 +80,8 @@ INSTRUCTIONS: List any other IBM technology used in your solution and describe h
 
 Diagram and step-by-step description of the flow of our solution:
 
-![Solution Architecture](https://github.com/bwangsta/Ragai/assets/64659920/35652775-bba2-4fd6-a5f3-309debcf041c)
+![Solution Architecture]![image](https://github.com/bwangsta/Ragai/assets/64659920/e00fd16e-985f-43b3-a5ed-afd078a40fbf)
+
 ![image](https://github.com/bwangsta/Ragai/assets/64659920/930d76a4-a215-461a-a8a7-caa5ac1ef9f2)
 
 
