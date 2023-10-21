@@ -24,6 +24,7 @@ export default function InventoryScreen() {
 
   return (
     <SafeArea
+      insets="top left right"
       style={{ backgroundColor: colors.white, marginBottom: tabBarHeight }}
     >
       <FlatList
