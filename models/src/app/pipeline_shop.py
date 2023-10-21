@@ -69,11 +69,11 @@ def add_item_to_inventory(image_uri, shop_hf_ds, return_new_item_json=False):
     cols = new_item_hf_dataset_df.columns.to_list()
     if "image" in cols:
         cols.remove("image")
-    new_item_json = new_item_hf_dataset_df[cols].to_json('new_item_hf_dataset_df.json', orient='records')
+    new_item_json = new_item_hf_dataset_df[cols].to_json(orient='records')
     hf_ds_w_new_item = add_image_to_hf_dataset(new_item_hf_dataset, shop_hf_ds)   
-    hf_ds_w_new_item = add_faiss_index_to_hfdataset(hf_ds_w_new_item)
-    if return_new_item_json:
+    # if return_new_item_json:
 
-        return hf_ds_w_new_item, new_item_json
-    else:
-        return hf_ds_w_new_item
+    #     return hf_ds_w_new_item, new_item_json
+    # else:
+    #     return hf_ds_w_new_item
+    return new_item_json

@@ -5,12 +5,25 @@ from src.app.pipeline_shop import create_hf_ds_from_db, add_item_to_inventory
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import certifi
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
+
+class Image(BaseModel):
+    url: str
 
 
 app = FastAPI()
 ca = certifi.where()
 namespace = uuid.NAMESPACE_URL
 uri = os.environ["DB_URI"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=ca)
@@ -22,6 +35,7 @@ except Exception as e:
 
 db = client.clothing
 collection = db.items
+hf_dataset = create_hf_ds_from_db(collection)
 
 @app.get("/")
 def read_root():
@@ -29,7 +43,7 @@ def read_root():
     # print(dataset)
     return {"dataset": "test"}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: None):
-    return {"item_id": item_id, "q": q}
+@app.post("/image")
+def post_image(image: Image):
+    return add_item_to_inventory(image.url, hf_dataset, return_new_item_json=True)
+    

@@ -1,4 +1,5 @@
 const BASE_URL = "http://10.0.2.2:3000"
+const MODEL_URL = "http://10.0.2.2:8000"
 
 export async function getData(endpoint: string) {
   try {
@@ -28,6 +29,24 @@ export async function postData(endpoint: string, formData: FormData) {
         "Content-Type": "multipart/form-data",
       },
     })
+    const data = await response.json()
+    return data
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export async function postModelData(endpoint: string, url: string) {
+  const body = JSON.stringify({ url: url })
+  try {
+    const response = await fetch(`${MODEL_URL}${endpoint}`, {
+      method: "POST",
+      body: body,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
     const data = await response.json()
     return data
   } catch (e) {

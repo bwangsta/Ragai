@@ -19,21 +19,15 @@ import { colors } from "../styles/colors"
 type TagsScreenProps = RootStackScreenProps<"Tags">
 
 export default function TagsScreen({ navigation, route }: TagsScreenProps) {
-  const { key, url } = route.params
+  const { key, url, id, tags, description, embeddings } = route.params
 
-  const [tags, setTags] = useState<string[]>([
-    "t-shirt",
-    "shirt",
-    "red",
-    "jacket",
-    "hoodie",
-    "fur jacket",
-    "pants",
-  ])
+  let formattedTags = tags.split("|")
+  formattedTags.map((tag) => tag.trim())
+  const [imageTags, setImageTags] = useState<string[]>(formattedTags)
   const [tagInput, setTagInput] = useState("")
 
   function deleteTag(selectedTag: string) {
-    setTags((prevTags) => prevTags.filter((tag) => tag !== selectedTag))
+    setImageTags((prevTags) => prevTags.filter((tag) => tag !== selectedTag))
   }
 
   function handleInputChange(text: string) {
@@ -41,12 +35,12 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
   }
 
   function handleSubmitEditing() {
-    setTags((prevTags) => [...prevTags, tagInput])
+    setImageTags((prevTags) => [...prevTags, tagInput])
     setTagInput("")
   }
 
   function finishEditing(index: number, newTag: string) {
-    setTags((prevTags) =>
+    setImageTags((prevTags) =>
       prevTags.map((tag, i) => (i === index ? newTag : tag))
     )
   }
@@ -61,9 +55,11 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
     formData.append(
       "data",
       JSON.stringify({
-        name: "Some clothing",
+        _id: id,
+        name: description,
         image: url,
-        tags: tags,
+        tags: formattedTags,
+        embeddings: embeddings,
       })
     )
     navigation.navigate("Home", { screen: "Camera" })
@@ -77,8 +73,9 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         style={{ flex: 1, paddingBottom: 16 }}
       >
         <Image style={{ flex: 2 }} source={{ uri: url }} resizeMode="contain" />
+        <Text>{description}</Text>
         <View style={styles.tagsList}>
-          {tags.map((tag, index) => (
+          {imageTags.map((tag, index) => (
             <Tag
               key={tag}
               index={index}
