@@ -1,6 +1,7 @@
 import { useState, useRef } from "react"
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { Camera, CameraType, FlashMode } from "expo-camera"
+import { manipulateAsync } from "expo-image-manipulator"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import { MaterialIcons, Ionicons } from "@expo/vector-icons"
 import { HomeTabScreenProps } from "../types"
@@ -50,8 +51,13 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   async function takePicture() {
     if (cameraRef.current) {
       const data = await cameraRef.current.takePictureAsync()
+      const formatted = await manipulateAsync(
+        data.uri,
+        [{ resize: { width: 600 } }],
+        { compress: 0.5 }
+      )
       cameraRef.current.pausePreview()
-      setImageUri(data.uri)
+      setImageUri(formatted.uri)
       setInPreview(true)
     }
   }
