@@ -9,53 +9,73 @@ import {
   Platform,
   TextInput,
 } from "react-native"
+import Ionicons from "@expo/vector-icons/Ionicons"
 import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
+import { deleteData, postData } from "../services/api"
+import { colors } from "../styles/colors"
 
 type TagsScreenProps = RootStackScreenProps<"Tags">
 
 export default function TagsScreen({ navigation, route }: TagsScreenProps) {
-  const { uri } = route.params
-  const [tags, setTags] = useState<string[]>([
-    "t-shirt",
-    "shirt",
-    "red",
-    "jacket",
-    "hoodie",
-    "fur jacket",
-    "pants",
-  ])
+  const { key, url, id, tags, description, embeddings } = route.params
+
+  let formattedTags = tags.split("|")
+  formattedTags.map((tag) => tag.trim())
+  const [imageTags, setImageTags] = useState<string[]>(formattedTags)
   const [tagInput, setTagInput] = useState("")
 
   function deleteTag(selectedTag: string) {
-    setTags((prevTags) => prevTags.filter((tag) => tag !== selectedTag))
+    setImageTags((prevTags) => prevTags.filter((tag) => tag !== selectedTag))
   }
 
   function handleInputChange(text: string) {
     setTagInput(text)
   }
 
-  function handleSubmit() {
-    setTags((prevTags) => [...prevTags, tagInput])
+  function handleSubmitEditing() {
+    setImageTags((prevTags) => [...prevTags, tagInput])
     setTagInput("")
   }
 
   function finishEditing(index: number, newTag: string) {
-    setTags((prevTags) =>
+    setImageTags((prevTags) =>
       prevTags.map((tag, i) => (i === index ? newTag : tag))
     )
+  }
+
+  async function handleCancel() {
+    navigation.navigate("Home", { screen: "Camera" })
+    await deleteData(`/images/${key}`)
+  }
+
+  async function handleSubmit() {
+    const formData = new FormData()
+    formData.append(
+      "data",
+      JSON.stringify({
+        _id: id,
+        name: description,
+        image: url,
+        tags: formattedTags,
+        embeddings: embeddings,
+      })
+    )
+    navigation.navigate("Home", { screen: "Camera" })
+    await postData("/items", formData)
   }
 
   return (
     <SafeArea>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
+        style={{ flex: 1, paddingBottom: 16 }}
       >
-        <Image style={{ flex: 2 }} source={{ uri: uri }} resizeMode="contain" />
+        <Image style={{ flex: 2 }} source={{ uri: url }} resizeMode="contain" />
+        <Text>{description}</Text>
         <View style={styles.tagsList}>
-          {tags.map((tag, index) => (
+          {imageTags.map((tag, index) => (
             <Tag
               key={tag}
               index={index}
@@ -68,27 +88,34 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         <View style={styles.inputBox}>
           <TextInput
             autoCapitalize="none"
+            placeholder="Add tags"
+            placeholderTextColor={colors.white}
             value={tagInput}
             style={styles.input}
             maxLength={20}
             onChangeText={handleInputChange}
-            onSubmitEditing={handleSubmit}
+            onSubmitEditing={handleSubmitEditing}
           />
-          <Text style={styles.addIcon}>+</Text>
+          <Ionicons
+            name="add"
+            size={24}
+            color={colors.white}
+            style={{ padding: 8 }}
+          />
         </View>
       </KeyboardAvoidingView>
       <View style={styles.buttonGroup}>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home", { screen: "Camera" })}
+          style={[styles.button, { backgroundColor: colors.secondary }]}
+          onPress={handleCancel}
         >
-          <Text>Cancel</Text>
+          <Text style={styles.text}>Cancel</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home", { screen: "Camera" })}
+          style={[styles.button, { backgroundColor: colors.primary }]}
+          onPress={handleSubmit}
         >
-          <Text>Confirm</Text>
+          <Text style={styles.text}>Submit</Text>
         </TouchableOpacity>
       </View>
     </SafeArea>
@@ -106,8 +133,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 8,
-    borderColor: "black",
-    borderWidth: 1,
   },
   tagsList: {
     flexDirection: "row",
@@ -120,15 +145,16 @@ const styles = StyleSheet.create({
   inputBox: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "black",
     borderRadius: 8,
+    backgroundColor: colors.primary,
   },
   input: {
     flex: 1,
     paddingLeft: 8,
+    color: colors.white,
   },
-  addIcon: {
-    padding: 8,
+  text: {
+    color: colors.white,
+    fontSize: 16,
   },
 })

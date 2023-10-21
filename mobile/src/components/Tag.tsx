@@ -1,11 +1,7 @@
 import { useState } from "react"
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-} from "react-native"
+import { StyleSheet, View, TouchableOpacity, TextInput } from "react-native"
+import Ionicons from "@expo/vector-icons/Ionicons"
+import { colors } from "../styles/colors"
 
 type TagProps = {
   name: string
@@ -31,10 +27,10 @@ export default function Tag({
         autoCapitalize="none"
         onChangeText={(text) => setTagName(text)}
         onEndEditing={() => finishEditing(index, tagName)}
-        style={{ fontSize: 16 }}
+        style={{ fontSize: 16, color: colors.white }}
       />
       <TouchableOpacity onPress={() => deleteTag(name)}>
-        <Text>X</Text>
+        <Ionicons name="close" size={24} color={colors.white} />
       </TouchableOpacity>
     </View>
   )
@@ -43,10 +39,11 @@ export default function Tag({
 const styles = StyleSheet.create({
   tag: {
     flexDirection: "row",
-    backgroundColor: "gray",
+    backgroundColor: colors.primary,
     alignItems: "center",
     gap: 16,
     borderRadius: 4,
     padding: 8,
+    overflow: "hidden",
   },
 })

@@ -1,10 +1,12 @@
 datasets 
 dnspython
+fastapi
 ibm-watson-machine-learning
 google-cloud-vision
 pymongo
 python-dotenv
 transformers
+uvicorn
 vision-transformer-pytorch
 
 

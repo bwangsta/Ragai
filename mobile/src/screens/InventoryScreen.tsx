@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { Image, StyleSheet, Text, View, FlatList } from "react-native"
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import SafeArea from "../components/SafeArea"
+import { getData } from "../services/api"
+import { colors } from "../styles/colors"
 
 type Item = {
   _id: string
@@ -10,28 +13,26 @@ type Item = {
 }
 
 export default function InventoryScreen() {
+  const tabBarHeight = useBottomTabBarHeight()
   const [itemsData, setItemsData] = useState<Item[]>([])
 
   useEffect(() => {
-    async function getItems() {
-      try {
-        const response = await fetch("http://10.0.2.2:3000/images")
-        const data = await response.json()
-        setItemsData(data)
-      } catch (e) {
-        console.log(e)
-      }
-    }
-    getItems()
+    getData("/items")
+      .then((data) => setItemsData(data))
+      .catch((e) => console.log(e))
   }, [])
 
   return (
-    <SafeArea>
+    <SafeArea
+      insets="top left right"
+      style={{ backgroundColor: colors.white, marginBottom: tabBarHeight }}
+    >
       <FlatList
         data={itemsData}
         extraData={itemsData}
-        numColumns={3}
+        numColumns={2}
         horizontal={false}
+        initialNumToRender={4}
         columnWrapperStyle={styles.column}
         renderItem={({ item }) => (
           <View key={item._id} style={styles.itemContainer}>
@@ -70,16 +71,20 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 150,
+    height: 240,
   },
   name: {
     paddingVertical: 4,
+    color: colors.black,
+    fontWeight: "bold",
   },
   tag: {
-    backgroundColor: "gray",
+    backgroundColor: colors.primary,
+    color: colors.white,
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
+    overflow: "hidden",
   },
   tagsList: {
     flexDirection: "row",

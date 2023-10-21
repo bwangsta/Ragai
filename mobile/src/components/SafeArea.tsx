@@ -2,7 +2,14 @@ import { View, StyleProp, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 type SafeAreaProps = {
-  insets?: "top" | "right" | "bottom" | "left" | "vertical" | "horizontal"
+  insets?:
+    | "top"
+    | "right"
+    | "bottom"
+    | "left"
+    | "vertical"
+    | "horizontal"
+    | "top left right"
   style?: StyleProp<ViewStyle>
   children: React.ReactNode
 }
@@ -40,6 +47,13 @@ export default function SafeArea({ insets, style, children }: SafeAreaProps) {
       padding = {
         paddingTop: top,
         paddingBottom: bottom,
+      }
+      break
+    case "top left right":
+      padding = {
+        paddingTop: top,
+        paddingLeft: left + offset,
+        paddingRight: right + offset,
       }
       break
     default:
