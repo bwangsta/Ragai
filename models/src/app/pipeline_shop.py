@@ -8,7 +8,7 @@ from pymongo.server_api import ServerApi
 
 
 from src.prompting.cleaning import clean_tags, generate_description
-from src.embedding.hfdataset_processing import create_dict_from_image2, create_hf_ds_from_dict, add_image_to_hf_dataset
+from src.embedding.hfdataset_processing import create_dict_from_image, create_dict_from_image2, create_hf_ds_from_dict, add_image_to_hf_dataset
 from src.embedding.search import add_faiss_index_to_hfdataset
 from src.embedding.embedding import add_embeddings, extract_embeddings
 from src.tagging.tagging import create_tags
