@@ -1,7 +1,9 @@
+import uuid
 from datasets import concatenate_datasets, Dataset
 
 from src.prompting.cleaning import clean_tags, generate_description
 from src.tagging.tagging import create_tags
+
 
 
 def create_dict_from_image(image, create_tags_and_desc=False):
@@ -9,7 +11,6 @@ def create_dict_from_image(image, create_tags_and_desc=False):
         new_item = {
             'image': [image],
             'tags': [clean_tags(create_tags(image))],
-            'random_id': [None],
         }
         new_item['description'] = generate_description(new_item['tags'][0])
     else:
@@ -17,8 +18,15 @@ def create_dict_from_image(image, create_tags_and_desc=False):
             'image': [image],
             'tags': [None],
             'description': [None],
-            'random_id': [None]
         }
+
+    return new_item
+
+def create_dict_from_image2(image):
+    
+    new_item = {
+        'image': [image],
+    }
 
     return new_item
 
