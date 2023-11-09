@@ -51,13 +51,40 @@ def create_hf_ds_from_db(collection):
     return test_brian_hf_dataset    
 
 
+# def add_item_to_inventory(image_uri, shop_hf_ds, return_new_item_json=False):
+    
+#     response = requests.get(image_uri)
+#     img_data = BytesIO(response.content)
+#     # Open and display the image using PIL
+#     img = Image.open(img_data)
+#     new_item_dict = create_dict_from_image(img)
+#     new_item_dict['image_uri'] = [image_uri]
+#     new_item_dict['random_id'] = [uuid.uuid5(namespace, image_uri).hex]
+#     new_item_dict['tags'] = [clean_tags(''.join(map(str,create_tags(image_uri))))]
+#     new_item_dict['description'] = [generate_description(new_item_dict['tags'][0])]
+#     new_item_hf_dataset = create_hf_ds_from_dict(new_item_dict)
+#     new_item_hf_dataset = add_embeddings(extract_fn, new_item_hf_dataset)
+#     # new_item_hf_dataset = add_faiss_index_to_hfdataset(new_item_hf_dataset)        
+#     new_item_hf_dataset_df = new_item_hf_dataset.to_pandas()
+#     cols = new_item_hf_dataset_df.columns.to_list()
+#     if "image" in cols:
+#         cols.remove("image")
+#     new_item_json = new_item_hf_dataset_df[cols].to_json(orient='records')
+#     hf_ds_w_new_item = add_image_to_hf_dataset(new_item_hf_dataset, shop_hf_ds)   
+#     # if return_new_item_json:
+
+#     #     return hf_ds_w_new_item, new_item_json
+#     # else:
+#     #     return hf_ds_w_new_item
+#     return new_item_json
+
 def add_item_to_inventory(image_uri, shop_hf_ds, return_new_item_json=False):
     
     response = requests.get(image_uri)
     img_data = BytesIO(response.content)
     # Open and display the image using PIL
     img = Image.open(img_data)
-    new_item_dict = create_dict_from_image(img)
+    new_item_dict = create_dict_from_image2(img)
     new_item_dict['image_uri'] = [image_uri]
     new_item_dict['random_id'] = [uuid.uuid5(namespace, image_uri).hex]
     new_item_dict['tags'] = [clean_tags(''.join(map(str,create_tags(image_uri))))]
@@ -70,11 +97,11 @@ def add_item_to_inventory(image_uri, shop_hf_ds, return_new_item_json=False):
     cols = new_item_hf_dataset_df.columns.to_list()
     if "image" in cols:
         cols.remove("image")
-    new_item_json = new_item_hf_dataset_df[cols].to_json(orient='records')
+    new_item_json = new_item_hf_dataset_df[cols].to_json('new_item_hf_dataset_df.json', orient='records')
     hf_ds_w_new_item = add_image_to_hf_dataset(new_item_hf_dataset, shop_hf_ds)   
-    # if return_new_item_json:
+    hf_ds_w_new_item = add_faiss_index_to_hfdataset(hf_ds_w_new_item)
+    if return_new_item_json:
 
-    #     return hf_ds_w_new_item, new_item_json
-    # else:
-    #     return hf_ds_w_new_item
-    return new_item_json
+        return hf_ds_w_new_item, new_item_json
+    else:
+        return hf_ds_w_new_item
