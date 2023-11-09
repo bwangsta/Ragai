@@ -37,13 +37,7 @@ db = client.clothing
 collection = db.items
 hf_dataset = create_hf_ds_from_db(collection)
 
-@app.get("/")
-def read_root():
-    # dataset = create_hf_ds_from_db(collection)
-    # print(dataset)
-    return {"dataset": "test"}
-
 @app.post("/image")
 def post_image(image: Image):
-    return add_item_to_inventory(image.url, hf_dataset, return_new_item_json=True)
+    return add_item_to_inventory(image.url, hf_dataset)
     

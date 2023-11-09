@@ -4,9 +4,6 @@ import uuid
 import json
 from PIL import Image
 from io import BytesIO
-from pymongo import MongoClient
-from pymongo.server_api import ServerApi
-
 
 from src.tagging.tagging import create_tags
 from src.embedding.hfdataset_processing import create_dict_from_image, create_hf_ds_from_dict, add_image_to_hf_dataset
@@ -26,12 +23,6 @@ extract_fn = extract_embeddings(model.to(DEVICE))
 from dotenv import load_dotenv
 
 load_dotenv()
-
-namespace = uuid.NAMESPACE_URL
-uri = os.environ["DB_URI"]
-client = MongoClient(uri, server_api=ServerApi('1'))
-db = client.clothing
-collection = db.items
 
 def search_k_most_similar_items(image_uri, hf_dataset, k = 5):
     response = requests.get(image_uri)
