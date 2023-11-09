@@ -32,7 +32,26 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.clothing
 collection = db.items
 
-def create_hf_ds_from_db(collection):
+# def create_hf_ds_from_db(collection):
+#     test_brian_hf_dataset = Dataset.from_dict({})
+#     for item in collection.find():
+#         image_uri = item["image"]
+#         response = requests.get(image_uri)
+#         img_data = BytesIO(response.content)
+#         # Open and display the image using PIL
+#         img = Image.open(img_data)
+#         brian_setup_dict = create_dict_from_image(img)
+#         brian_setup_dict['image_uri'] = [image_uri]
+#         brian_setup_dict['image'] = [img]
+#         brian_setup_dict['random_id'] = [uuid.uuid5(namespace, image_uri).hex]
+#         brian_setup_hf_dataset = create_hf_ds_from_dict(brian_setup_dict)
+#         test_brian_hf_dataset = add_image_to_hf_dataset(brian_setup_hf_dataset, test_brian_hf_dataset)
+
+#     test_brian_hf_dataset = add_embeddings(extract_fn, test_brian_hf_dataset)
+#     return test_brian_hf_dataset    
+
+
+def create_hf_ds_from_db():
     test_brian_hf_dataset = Dataset.from_dict({})
     for item in collection.find():
         image_uri = item["image"]
@@ -40,15 +59,18 @@ def create_hf_ds_from_db(collection):
         img_data = BytesIO(response.content)
         # Open and display the image using PIL
         img = Image.open(img_data)
-        brian_setup_dict = create_dict_from_image(img)
+        brian_setup_dict = create_dict_from_image2(img)
         brian_setup_dict['image_uri'] = [image_uri]
-        brian_setup_dict['image'] = [img]
         brian_setup_dict['random_id'] = [uuid.uuid5(namespace, image_uri).hex]
         brian_setup_hf_dataset = create_hf_ds_from_dict(brian_setup_dict)
         test_brian_hf_dataset = add_image_to_hf_dataset(brian_setup_hf_dataset, test_brian_hf_dataset)
 
     test_brian_hf_dataset = add_embeddings(extract_fn, test_brian_hf_dataset)
+    if 'embeddings' not in test_brian_hf_dataset:
+        print("No embeddings 1")
+
     return test_brian_hf_dataset    
+
 
 
 # def add_item_to_inventory(image_uri, shop_hf_ds, return_new_item_json=False):
@@ -87,11 +109,13 @@ def add_item_to_inventory(image_uri, shop_hf_ds, return_new_item_json=False):
     new_item_dict = create_dict_from_image2(img)
     new_item_dict['image_uri'] = [image_uri]
     new_item_dict['random_id'] = [uuid.uuid5(namespace, image_uri).hex]
-    new_item_dict['tags'] = [clean_tags(''.join(map(str,create_tags(image_uri))))]
-    new_item_dict['description'] = [generate_description(new_item_dict['tags'][0])]
+    # new_item_dict['tags'] = [clean_tags(''.join(map(str,create_tags(image_uri))))]
+    # new_item_dict['description'] = [generate_description(new_item_dict['tags'][0])]
 
     new_item_hf_dataset = create_hf_ds_from_dict(new_item_dict)
     new_item_hf_dataset = add_embeddings(extract_fn, new_item_hf_dataset)
+    if 'embeddings' not in new_item_hf_dataset:
+        print("No embeddings 2")
     # new_item_hf_dataset = add_faiss_index_to_hfdataset(new_item_hf_dataset)        
     new_item_hf_dataset_df = new_item_hf_dataset.to_pandas()
     cols = new_item_hf_dataset_df.columns.to_list()
