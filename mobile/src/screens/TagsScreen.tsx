@@ -22,7 +22,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
   const { key, url, id, tags, description, embeddings } = route.params
 
   let formattedTags = tags.split("|")
-  formattedTags.map((tag) => tag.trim())
+  formattedTags = formattedTags.map((tag) => tag.trim().toLowerCase())
   const [imageTags, setImageTags] = useState<string[]>(formattedTags)
   const [tagInput, setTagInput] = useState("")
 
@@ -58,7 +58,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         _id: id,
         name: description,
         image: url,
-        tags: formattedTags,
+        tags: imageTags,
         embeddings: embeddings,
       })
     )

@@ -79,18 +79,22 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
 
     closePreview()
     navigation.navigate("Loading", { message: "Generating tags..." })
-    const data = await postData("/images", formData)
-    let modelData = await postModelData("/image", data.url)
-    modelData = JSON.parse(modelData)
-    const { tags, description, random_id, embeddings } = modelData[0]
-    navigation.navigate("Tags", {
-      key: data.key,
-      url: data.url,
-      id: random_id,
-      tags: tags,
-      description: description,
-      embeddings: embeddings,
-    })
+    try {
+      const data = await postData("/images", formData)
+      let modelData = await postModelData("/image", data.url)
+      modelData = JSON.parse(modelData)
+      const { tags, description, random_id, embeddings } = modelData[0]
+      navigation.navigate("Tags", {
+        key: data.key,
+        url: data.url,
+        id: random_id,
+        tags: tags,
+        description: description,
+        embeddings: embeddings,
+      })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   if (!permission) {

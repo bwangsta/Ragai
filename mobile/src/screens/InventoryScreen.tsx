@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react"
+import { useState, useCallback } from "react"
 import { Image, StyleSheet, Text, View, FlatList } from "react-native"
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
+import { useFocusEffect } from "@react-navigation/native"
 import SafeArea from "../components/SafeArea"
 import { getData } from "../services/api"
 import { colors } from "../styles/colors"
@@ -16,11 +17,13 @@ export default function InventoryScreen() {
   const tabBarHeight = useBottomTabBarHeight()
   const [itemsData, setItemsData] = useState<Item[]>([])
 
-  useEffect(() => {
-    getData("/items")
-      .then((data) => setItemsData(data))
-      .catch((e) => console.log(e))
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      getData("/items")
+        .then((data) => setItemsData(data))
+        .catch((e) => console.log(e))
+    }, [])
+  )
 
   return (
     <SafeArea
