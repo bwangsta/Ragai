@@ -42,6 +42,7 @@ def create_hf_ds_from_db(collection):
         img = Image.open(img_data)
         brian_setup_dict = create_dict_from_image(img)
         brian_setup_dict['image_uri'] = [image_uri]
+        brian_setup_dict['image'] = [img]
         brian_setup_dict['random_id'] = [uuid.uuid5(namespace, image_uri).hex]
         brian_setup_hf_dataset = create_hf_ds_from_dict(brian_setup_dict)
         test_brian_hf_dataset = add_image_to_hf_dataset(brian_setup_hf_dataset, test_brian_hf_dataset)
