@@ -1,57 +1,43 @@
-import os
-import numpy as np
-import pandas as pd 
+import requests
 import torch
-import torchvision.transforms as T
-from transformers import AutoFeatureExtractor, AutoModel
+from PIL import Image
+from io import BytesIO
+from torchvision import models, transforms
+from torchvision.models import VGG11_Weights
 
-from constants import VISION_TRANSFORMER_CKPT, DEVICE
+
+weights = VGG11_Weights.DEFAULT
+model = models.vgg11(weights=weights)
+model.classifier = model.classifier[:-1]
+model.eval()
 
 
-extractor = AutoFeatureExtractor.from_pretrained(VISION_TRANSFORMER_CKPT)
-model = AutoModel.from_pretrained(VISION_TRANSFORMER_CKPT)
-hidden_dim = model.config.hidden_size
-transformation_chain = T.Compose( #Does a bunch of modifications to the images in the dataset 
-[
-    # We first resize the input image to 256x256 and then we take center crop.
-    T.Resize(int((256 / 224) * extractor.size["height"])),
-    T.CenterCrop(extractor.size["height"]),
-    T.ToTensor(),
-    T.Normalize(mean=extractor.image_mean, std=extractor.image_std),
-]
-)
 
-def _transform_images(images):
-    transformation_chain = T.Compose( #Does a bunch of modifications to the images in the dataset 
-    [
-    # We first resize the input image to 256x256 and then we take center crop.
-    T.Resize(int((256 / 224) * extractor.size["height"])),
-    T.CenterCrop(extractor.size["height"]),
-    T.ToTensor(),
-    T.Normalize(mean=extractor.image_mean, std=extractor.image_std),
-    ]
-)
+def get_image(image_URL):
 
-    processed_images = torch.stack([transformation_chain(image) for image in images])
-    return processed_images
+    response = requests.get(image_URL)
+    image = Image.open(BytesIO(response.content)).convert("RGB")
 
-def extract_embeddings(model: torch.nn.Module):
-    """Utility to compute embeddings."""
-    device = model.device
+    return image
 
-    def pp(batch): #preprocessing
-        images = batch["image"]
-        # image_batch_transformed = torch.stack([transformation_chain(image) for image in images])
-        image_batch_transformed = _transform_images(images)
-        new_batch = {"pixel_values": image_batch_transformed.to(device)} #creates a batch with the modified images
-        with torch.no_grad():
-            embeddings = model(**new_batch).last_hidden_state[:, 0].cpu() #inference with cpu, creates embeddings from images
-        return {"embeddings": embeddings}
+def preprocess_image(image):
+    preprocess = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ])
 
-    return pp
+    image = preprocess(image).unsqueeze(0)
+    return image
 
-extract_fn = extract_embeddings(model.to(DEVICE))
+def get_single_image_embedding(image):
 
-def add_embeddings(extraction_function, hf_dataset):
-    hf_dataset_w_embeddings = hf_dataset.map(extraction_function, batched=True, batch_size=len(hf_dataset["image"]))
-    return hf_dataset_w_embeddings
+  image = preprocess_image(image)
+  with torch.no_grad():
+    embeddings = model(image)
+
+  # convert the embeddings to numpy array
+  embedding_as_np = embeddings.cpu().detach().numpy()
+
+  return embedding_as_np
