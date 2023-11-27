@@ -1,7 +1,7 @@
 from google.cloud import vision
 from gradio_client import Client
 
-def create_tags2(img_uri) -> vision.EntityAnnotation:
+def create_tags_google_vision(img_uri) -> vision.EntityAnnotation:
 
     # Instantiates a client
     client = vision.ImageAnnotatorClient()
