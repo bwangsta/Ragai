@@ -43,4 +43,4 @@ DESCRIPTION_PROMPT=f"""Given a list of cleaned tags, create a short product desc
 Cleaned tags:"""
 VISION_TRANSFORMER_CKPT="google/vit-base-patch16-224-in21k"
 DEVICE="cpu"
-
+INDEX='clothes1'
