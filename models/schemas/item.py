@@ -2,10 +2,14 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class Item(BaseModel):
-    _id: str
-    name: str
-    image: str
+class Metadata(BaseModel):
+    desc: str
     tags: list[str]
-    embeddings: list[float]
-    created_at: datetime = datetime.now()
+    url: str
+
+
+class Item(BaseModel):
+    id: str
+    metadata: Metadata
+    score: float
+    values: list[float]
