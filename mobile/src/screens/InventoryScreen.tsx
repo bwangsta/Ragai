@@ -7,10 +7,12 @@ import { getData } from "../services/api"
 import { colors } from "../styles/colors"
 
 type Item = {
-  _id: string
-  name: string
-  image: string
-  tags: string[]
+  id: string
+  metadata: {
+    desc: string
+    tags: string[]
+    url: string
+  }
 }
 
 export default function InventoryScreen() {
@@ -38,15 +40,15 @@ export default function InventoryScreen() {
         initialNumToRender={4}
         columnWrapperStyle={styles.column}
         renderItem={({ item }) => (
-          <View key={item._id} style={styles.itemContainer}>
+          <View key={item.id} style={styles.itemContainer}>
             <Image
-              source={{ uri: item.image }}
+              source={{ uri: item.metadata.url }}
               style={styles.image}
               borderRadius={8}
             />
-            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.name}>{item.metadata.desc}</Text>
             <View style={styles.tagsList}>
-              {item.tags.map((tag) => (
+              {item.metadata.tags.map((tag) => (
                 <Text key={tag} style={styles.tag}>
                   {tag}
                 </Text>

@@ -1,15 +1,12 @@
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+import uvicorn
 import uuid
+import os
 
 load_dotenv()
-from routers import images, items
-
-
-# class Image(BaseModel):
-#     url: str
+from routers import images, items, models
 
 
 app = FastAPI()
@@ -25,7 +22,7 @@ app.add_middleware(
 
 app.include_router(images.router)
 app.include_router(items.router)
+app.include_router(models.router)
 
-# @app.post("/image")
-# def post_image(image: Image):
-#     return add_item_to_inventory(image.url, hf_dataset)
+if __name__ == "__main__":
+    uvicorn.run(app="main:app", reload=True, host=os.environ["HOST"])
