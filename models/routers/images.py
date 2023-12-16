@@ -8,7 +8,7 @@ BUCKET_NAME = os.environ["BUCKET_NAME"]
 
 
 # Upload image from mobile app to IBM Cloud Object Storage
-@router.post("", status_code=201)
+@router.post("/", status_code=201)
 async def upload_image(image: UploadFile = File(...)):
     key = os.path.basename(image.filename)
     url = f"{os.environ['ENDPOINT']}/{BUCKET_NAME}/{key}"

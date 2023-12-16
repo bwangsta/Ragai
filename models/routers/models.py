@@ -19,7 +19,7 @@ class ModelResponse(BaseModel):
     embeddings: list[float]
 
 
-@router.post("", response_model=ModelResponse)
+@router.post("/", response_model=ModelResponse)
 def send_image_to_model(image: Image):
     id = uuid.uuid4().hex
     tags = clean_tags(create_tags(image.url))

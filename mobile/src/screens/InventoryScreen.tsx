@@ -21,7 +21,7 @@ export default function InventoryScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      getData("/items")
+      getData("/items/")
         .then((data) => setItemsData(data))
         .catch((e) => console.log(e))
     }, [])

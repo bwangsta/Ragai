@@ -53,7 +53,7 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
   async function handleSubmit() {
     navigation.navigate("Home", { screen: "Camera" })
     try {
-      await postData("/items", {
+      await postData("/items/", {
         id: id,
         metadata: {
           url: url,
