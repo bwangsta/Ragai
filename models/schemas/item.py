@@ -11,5 +11,5 @@ class Metadata(BaseModel):
 class Item(BaseModel):
     id: str
     metadata: Metadata
-    score: float
+    score: float = 0.0
     values: list[float]

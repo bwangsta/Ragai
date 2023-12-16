@@ -6,7 +6,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs"
 import { MaterialIcons, Ionicons } from "@expo/vector-icons"
 import { HomeTabScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
-import { postData, postModelData } from "../services/api"
+import { postImage, postData } from "../services/api"
 import { colors } from "../styles/colors"
 
 type CameraScreenProps = HomeTabScreenProps<"Camera">
@@ -80,8 +80,8 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     closePreview()
     navigation.navigate("Loading", { message: "Generating tags..." })
     try {
-      const data = await postData("/images", formData)
-      const modelData = await postModelData("/models", data.url)
+      const data = await postImage("/images", formData)
+      const modelData = await postData("/models", { url: data.url })
       const { id, tags, description, embeddings } = modelData
       navigation.navigate("Tags", {
         key: data.key,

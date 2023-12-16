@@ -6,6 +6,7 @@ from constants import DIMENSIONS
 router = APIRouter(prefix="/items", tags=["items"])
 
 
+# Retrieve all clothing items in database
 @router.get("", response_model=list[Item])
 def get_items():
     try:
@@ -17,5 +18,16 @@ def get_items():
         )
 
         return items.matches
+    except Exception as e:
+        print(e)
+
+
+# Add clothing image, description, tags, and embeddings to database
+@router.post("", status_code=201)
+def add_item_to_database(item: Item):
+    # Converts Pydantic Item model into Python dictionary
+    item_dict = item.model_dump(exclude={"score"})
+    try:
+        index.upsert(vectors=[item_dict])
     except Exception as e:
         print(e)
