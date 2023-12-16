@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react"
-import { getData, postData } from "./services/api"
+import { getData, postImage } from "./services/api"
 
 type Item = {
-  _id: string
-  name: string
-  image: string
-  tags: string[]
-  createdAt: string
+  id: string
+  values: number[]
+  score: number
+  metadata: {
+    desc: string
+    tags: string[]
+    url: string
+  }
 }
 
 function App() {
@@ -16,7 +19,7 @@ function App() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    getData("/items").then((data) => setItems(data))
+    getData("/items/").then((data) => setItems(data))
   }, [])
 
   useEffect(() => {
@@ -43,9 +46,9 @@ function App() {
     event.preventDefault()
     if (fileData) {
       const formData = new FormData()
-      formData.append("image", fileData)
-      const data = await postData("/images/upload", formData)
-      setPreviewUrl(data.url)
+      formData.append("file", fileData)
+      const newItems = await postImage("/items/similar", formData)
+      setItems(newItems)
     }
   }
 
@@ -98,20 +101,23 @@ function App() {
       <div className="grid grid-cols-fluid gap-4 py-4">
         {items.map((item) => (
           <div
-            key={item._id}
-            className="overflow-hidden rounded-lg bg-secondary"
+            key={item.id}
+            className="overflow-hidden rounded-md bg-secondary"
           >
             <img
-              src={item.image}
-              alt={item.name}
-              className="h-72 w-full object-cover"
+              src={item.metadata.url}
+              alt={item.metadata.desc}
+              className="h-96 w-full object-cover"
             />
             <div className="p-4">
               <h2 className="mb-4 text-lg font-semibold text-black">
-                {item.name}
+                {item.metadata.desc}
+              </h2>
+              <h2 className="mb-4 text-lg font-semibold text-black">
+                Score: {item.score}
               </h2>
               <div className="flex flex-wrap gap-1">
-                {item.tags.map((tag) => (
+                {item.metadata.tags.map((tag) => (
                   <p
                     key={tag}
                     className="rounded-lg bg-primary px-2 py-1 text-white"
