@@ -51,19 +51,20 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
   }
 
   async function handleSubmit() {
-    const formData = new FormData()
-    formData.append(
-      "data",
-      JSON.stringify({
-        _id: id,
-        name: description,
-        image: url,
-        tags: imageTags,
-        embeddings: embeddings,
-      })
-    )
     navigation.navigate("Home", { screen: "Camera" })
-    await postData("/items", formData)
+    try {
+      await postData("/items/", {
+        id: id,
+        metadata: {
+          url: url,
+          desc: description,
+          tags: imageTags,
+        },
+        values: embeddings,
+      })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (

@@ -1,5 +1,4 @@
-const BASE_URL = "http://10.0.2.2:3000"
-const MODEL_URL = "http://10.0.2.2:8000"
+const BASE_URL = "http://10.0.2.2:8000"
 
 export async function getData(endpoint: string) {
   try {
@@ -19,7 +18,7 @@ export async function deleteData(endpoint: string) {
   }
 }
 
-export async function postData(endpoint: string, formData: FormData) {
+export async function postImage(endpoint: string, formData: FormData) {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
@@ -36,19 +35,19 @@ export async function postData(endpoint: string, formData: FormData) {
   }
 }
 
-export async function postModelData(endpoint: string, url: string) {
-  const body = JSON.stringify({ url: url })
+export async function postData(endpoint: string, data: any) {
   try {
-    const response = await fetch(`${MODEL_URL}${endpoint}`, {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
-      body: body,
+      body: JSON.stringify(data),
       headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
     })
+    const responseData = await response.json()
 
-    const data = await response.json()
-    return data
+    return responseData
   } catch (e) {
     console.log(e)
   }

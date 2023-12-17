@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000"
+const BASE_URL = "http://localhost:8000"
 
 export async function getData(endpoint: string) {
   try {
@@ -10,7 +10,7 @@ export async function getData(endpoint: string) {
   }
 }
 
-export async function postData(endpoint: string, formData: FormData) {
+export async function postImage(endpoint: string, formData: FormData) {
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       method: "POST",
