@@ -36,15 +36,23 @@ def add_item(item: Item):
         print(e)
 
 
+@router.delete("/{id}")
+def delete_item(id: str):
+    try:
+        index.delete(ids=[id])
+    except Exception as e:
+        print(e)
+
+
 @router.post("/similar", response_model=list[Item])
-async def similar_items(file: UploadFile = File(...)) -> list[Item]:
+async def similar_items(file: UploadFile = File(...), limit: int = 1000) -> list[Item]:
     try:
         contents = await file.read()
         with Image.open(BytesIO(contents)).convert("RGB") as image:
             embeddings = get_single_image_embedding(image)[0].tolist()
         items = index.query(
             vector=embeddings,
-            top_k=1000,
+            top_k=limit,
             include_values=False,
             include_metadata=True,
         )

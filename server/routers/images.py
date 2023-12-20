@@ -9,13 +9,13 @@ BUCKET_NAME = os.environ["BUCKET_NAME"]
 
 # Upload image from mobile app to IBM Cloud Object Storage
 @router.post("/", status_code=201)
-async def upload_image(image: UploadFile = File(...)):
-    key = os.path.basename(image.filename)
+async def upload_image(file: UploadFile = File(...)):
+    key = os.path.basename(file.filename)
     url = f"{os.environ['ENDPOINT']}/{BUCKET_NAME}/{key}"
     try:
-        contents = await image.read()
-        with BytesIO(contents) as data:
-            s3.upload_fileobj(data, BUCKET_NAME, key)
+        contents = await file.read()
+        with BytesIO(contents) as image:
+            s3.upload_fileobj(image, BUCKET_NAME, key)
         print(f"Uploaded image {key}")
     except Exception as e:
         print(e)

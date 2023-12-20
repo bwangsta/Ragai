@@ -10,6 +10,7 @@ import TagsScreen from "./src/screens/TagsScreen"
 import { RootStackParamList, HomeTabParamList } from "./src/types"
 import LoadingScreen from "./src/screens/LoadingScreen"
 import { colors } from "./src/styles/colors"
+import RemoveItemScreen from "./src/screens/RemoveItemScreen"
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator<HomeTabParamList>()
@@ -60,6 +61,7 @@ export default function App() {
             )}
           </Stack.Screen>
           <Stack.Screen name="Tags" component={TagsScreen} />
+          <Stack.Screen name="Remove" component={RemoveItemScreen} />
           <Stack.Screen name="Loading" component={LoadingScreen} />
         </Stack.Navigator>
       </NavigationContainer>

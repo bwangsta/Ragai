@@ -15,6 +15,7 @@ export type RootStackParamList = {
     description: string
     embeddings: number[]
   }
+  Remove: { items: Item[] }
   Loading: { message: string }
 }
 
@@ -31,3 +32,14 @@ export type HomeTabScreenProps<T extends keyof HomeTabParamList> =
     BottomTabScreenProps<HomeTabParamList, T>,
     StackScreenProps<RootStackParamList>
   >
+
+export type Item = {
+  id: string
+  values: number[]
+  score: number
+  metadata: {
+    desc: string
+    tags: string[]
+    url: string
+  }
+}

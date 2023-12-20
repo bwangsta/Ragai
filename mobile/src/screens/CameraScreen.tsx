@@ -17,6 +17,7 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   const [type, setType] = useState(CameraType.back)
   const [inPreview, setInPreview] = useState(false)
   const [flashMode, setFlashMode] = useState(FlashMode.auto)
+  const [mode, setMode] = useState<"add" | "remove">("add")
   const [imageUri, setImageUri] = useState("")
   const [permission, requestPermission] = Camera.useCameraPermissions()
   let flashIcon: keyof typeof MaterialIcons.glyphMap
@@ -48,6 +49,10 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     })
   }
 
+  function toggleMode() {
+    setMode((prevMode) => (prevMode === "add" ? "remove" : "add"))
+  }
+
   async function takePicture() {
     if (cameraRef.current) {
       const data = await cameraRef.current.takePictureAsync()
@@ -70,29 +75,39 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
   }
 
   async function onSubmit() {
+    closePreview()
     const formData = new FormData()
-    formData.append("image", {
+    formData.append("file", {
       uri: imageUri,
       type: "image/jpg",
       name: imageUri,
     })
-
-    closePreview()
-    navigation.navigate("Loading", { message: "Generating tags..." })
-    try {
-      const data = await postImage("/images/", formData)
-      const modelData = await postData("/models/", { url: data.url })
-      const { id, tags, description, embeddings } = modelData
-      navigation.navigate("Tags", {
-        key: data.key,
-        url: data.url,
-        id: id,
-        tags: tags,
-        description: description,
-        embeddings: embeddings,
+    const loadingMessage =
+      mode === "add"
+        ? "Generating tags and description..."
+        : "Searching for similar items..."
+    navigation.navigate("Loading", { message: loadingMessage })
+    if (mode === "add") {
+      try {
+        const data = await postImage("/images/", formData)
+        const modelData = await postData("/models/", { url: data.url })
+        const { id, tags, description, embeddings } = modelData
+        navigation.navigate("Tags", {
+          key: data.key,
+          url: data.url,
+          id: id,
+          tags: tags,
+          description: description,
+          embeddings: embeddings,
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    } else {
+      const data = await postImage("/items/similar?limit=10", formData)
+      navigation.navigate("Remove", {
+        items: data,
       })
-    } catch (e) {
-      console.log(e)
     }
   }
 
@@ -176,6 +191,9 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
                   color={colors.white}
                   size={32}
                 />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={toggleMode}>
+                <Text style={{ color: "white" }}>{mode}</Text>
               </TouchableOpacity>
             </View>
             <TouchableOpacity
