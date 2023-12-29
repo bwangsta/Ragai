@@ -14,7 +14,7 @@ class Image(BaseModel):
 
 class ModelResponse(BaseModel):
     id: str
-    tags: str
+    tags: list[str]
     description: str
     embeddings: list[float]
 
@@ -23,11 +23,13 @@ class ModelResponse(BaseModel):
 def send_image_to_model(image: Image):
     id = uuid.uuid4().hex
     tags = clean_tags(create_tags(image.url))
+    tags_array = tags.split("|")
+    formatted_tags = [tag.strip().lower() for tag in tags_array]
     description = generate_description(image.url)
     embeddings = get_single_image_embedding(get_image(image.url))[0].tolist()
     return {
         "id": id,
-        "tags": tags,
+        "tags": formatted_tags,
         "description": description,
         "embeddings": embeddings,
     }

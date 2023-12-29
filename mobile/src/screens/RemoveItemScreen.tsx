@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import SafeArea from "../components/SafeArea"
+import Loading from "../components/Loading"
 import { Item, RootStackScreenProps } from "../types"
 import { colors } from "../styles/colors"
-import { deleteData } from "../services/api"
+import { deleteData, postImage } from "../services/api"
 
 type RemoveItemScreenProps = RootStackScreenProps<"Remove">
 
@@ -18,8 +19,17 @@ export default function RemoveItemScreen({
   navigation,
   route,
 }: RemoveItemScreenProps) {
-  const { items } = route.params
-  const [selectedItem, setSelectedItem] = useState<Item>(items[0])
+  const { imageData } = route.params
+  const [items, setItems] = useState<Item[]>([])
+  const [selectedItem, setSelectedItem] = useState<Item>()
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    postImage("/items/similar?limit=10", imageData)
+      .then((data) => setItems(data))
+      .catch((e) => console.log(e))
+      .finally(() => setIsLoading(false))
+  }, [])
 
   function handleCancelPress() {
     navigation.navigate("Home", { screen: "Camera" })
@@ -27,7 +37,7 @@ export default function RemoveItemScreen({
 
   async function handleConfirmPress() {
     try {
-      await deleteData(`/items/${selectedItem.id}`)
+      await deleteData(`/items/${selectedItem?.id}`)
       navigation.navigate("Home", { screen: "Camera" })
     } catch (error) {
       console.log(error)
@@ -38,12 +48,16 @@ export default function RemoveItemScreen({
     setSelectedItem(item)
   }
 
+  if (isLoading) {
+    return <Loading message="Searching for the item..." />
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 5 }}>
         <Image
           style={{ flex: 5 }}
-          source={{ uri: selectedItem.metadata.url }}
+          source={{ uri: selectedItem?.metadata.url ?? items[0].metadata.url }}
         />
         <FlatList
           data={items}

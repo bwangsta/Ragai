@@ -8,7 +8,6 @@ import CameraScreen from "./src/screens/CameraScreen"
 import InventoryScreen from "./src/screens/InventoryScreen"
 import TagsScreen from "./src/screens/TagsScreen"
 import { RootStackParamList, HomeTabParamList } from "./src/types"
-import LoadingScreen from "./src/screens/LoadingScreen"
 import { colors } from "./src/styles/colors"
 import RemoveItemScreen from "./src/screens/RemoveItemScreen"
 
@@ -62,7 +61,6 @@ export default function App() {
           </Stack.Screen>
           <Stack.Screen name="Tags" component={TagsScreen} />
           <Stack.Screen name="Remove" component={RemoveItemScreen} />
-          <Stack.Screen name="Loading" component={LoadingScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

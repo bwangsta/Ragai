@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   StyleSheet,
   Text,
@@ -13,21 +13,56 @@ import Ionicons from "@expo/vector-icons/Ionicons"
 import { RootStackScreenProps } from "../types"
 import SafeArea from "../components/SafeArea"
 import Tag from "../components/Tag"
-import { deleteData, postData } from "../services/api"
+import Loading from "../components/Loading"
+import { deleteData, postData, postImage } from "../services/api"
 import { colors } from "../styles/colors"
 
 type TagsScreenProps = RootStackScreenProps<"Tags">
+type ItemInfo = {
+  key: string
+  url: string
+  id: string
+  tags: string[]
+  description: string
+  embeddings: number[]
+}
 
 export default function TagsScreen({ navigation, route }: TagsScreenProps) {
-  const { key, url, id, tags, description, embeddings } = route.params
+  const { imageData } = route.params
 
-  let formattedTags = tags.split("|")
-  formattedTags = formattedTags.map((tag) => tag.trim().toLowerCase())
-  const [imageTags, setImageTags] = useState<string[]>(formattedTags)
   const [tagInput, setTagInput] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  const [item, setItem] = useState<ItemInfo>({} as ItemInfo)
+
+  useEffect(() => {
+    async function getItem() {
+      setIsLoading(true)
+      try {
+        const data = await postImage("/images/", imageData)
+        const modelData = await postData("/models/", { url: data.url })
+        const { id, tags, description, embeddings } = modelData
+        setItem({
+          key: data.key,
+          url: data.url,
+          id: id,
+          tags: tags,
+          description: description,
+          embeddings: embeddings,
+        })
+      } catch (e) {
+        console.log(e)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    getItem()
+  }, [])
 
   function deleteTag(selectedTag: string) {
-    setImageTags((prevTags) => prevTags.filter((tag) => tag !== selectedTag))
+    setItem((prevItem) => ({
+      ...prevItem,
+      tags: prevItem.tags.filter((tag) => tag !== selectedTag),
+    }))
   }
 
   function handleInputChange(text: string) {
@@ -35,36 +70,44 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
   }
 
   function handleSubmitEditing() {
-    setImageTags((prevTags) => [...prevTags, tagInput])
+    setItem((prevItem) => ({
+      ...prevItem,
+      tags: [...prevItem.tags, tagInput],
+    }))
     setTagInput("")
   }
 
   function finishEditing(index: number, newTag: string) {
-    setImageTags((prevTags) =>
-      prevTags.map((tag, i) => (i === index ? newTag : tag))
-    )
+    setItem((prevItem) => ({
+      ...prevItem,
+      tags: prevItem.tags.map((tag, i) => (i === index ? newTag : tag)),
+    }))
   }
 
   async function handleCancel() {
     navigation.navigate("Home", { screen: "Camera" })
-    await deleteData(`/images/${key}`)
+    await deleteData(`/images/${item.key}`)
   }
 
   async function handleSubmit() {
     navigation.navigate("Home", { screen: "Camera" })
     try {
       await postData("/items/", {
-        id: id,
+        id: item.id,
         metadata: {
-          url: url,
-          desc: description,
-          tags: imageTags,
+          url: item.url,
+          desc: item.description,
+          tags: item.tags,
         },
-        values: embeddings,
+        values: item.embeddings,
       })
     } catch (e) {
       console.log(e)
     }
+  }
+
+  if (isLoading) {
+    return <Loading message="Generating tags and description" />
   }
 
   return (
@@ -73,10 +116,14 @@ export default function TagsScreen({ navigation, route }: TagsScreenProps) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1, paddingBottom: 16 }}
       >
-        <Image style={{ flex: 2 }} source={{ uri: url }} resizeMode="contain" />
-        <Text>{description}</Text>
+        <Image
+          style={{ flex: 2 }}
+          source={{ uri: item.url }}
+          resizeMode="contain"
+        />
+        <Text>{item.description}</Text>
         <View style={styles.tagsList}>
-          {imageTags.map((tag, index) => (
+          {item.tags.map((tag, index) => (
             <Tag
               key={tag}
               index={index}

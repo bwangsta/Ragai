@@ -5,9 +5,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "types": [
-      "react-native"
-    ],
+    "types": ["react-native", "node"],
     "lib": [
       "es2019",
       "es2020.bigint",
@@ -35,9 +33,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "exclude": [
-    "node_modules",
-    "babel.config.js"
-  ],
+  "exclude": ["node_modules", "babel.config.js"],
   "extends": "expo/tsconfig.base"
 }
